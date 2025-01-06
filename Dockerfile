@@ -19,11 +19,11 @@ COPY . .
 # Set the environment variable for Python to run in production mode
 ENV PYTHONUNBUFFERED 1
 
-# Make sure the start.sh script is executable
+# Make sure the start script is executable
 RUN chmod +x start
 
 # Expose the port that the app will run on (usually 5000 for Flask or Django)
 EXPOSE 5000
 
-# Run the start.sh script using bash
+# Run the start script using bash
 CMD ["bash", "start"]
