@@ -19,7 +19,7 @@ async def bot_sys_stats():
     return up_time, cpu, ram, disk
 
 # Ping command
-@app.on_message(filters.command(["ping", "alive"]) & ~BANNED_USERS)
+@app.on_message(filters.command(["ping", "alive"]))
 async def ping_com(client, message: Message):
     start = datetime.now()
 
