@@ -1,21 +1,11 @@
 import os
-import shutil
-import asyncio
-import re
-import subprocess
 import sys
 import traceback
-import logging
-from inspect import getfullargspec
 from io import StringIO
 from time import time
-from pyrogram.types import BotCommand
-from pyrogram import filters, Client as PyroClient, idle
+from inspect import getfullargspec
+from pyrogram import filters, Client as PyroClient
 from pyrogram.types import InlineKeyboardButton, InlineKeyboardMarkup, Message
-from telethon import TelegramClient, events, Button
-from telethon.tl.custom import Button
-
-
 
 async def aexec(code, client, message):
     exec(
@@ -28,8 +18,6 @@ async def edit_or_reply(msg: Message, **kwargs):
     func = msg.edit_text if msg.from_user.is_self else msg.reply
     spec = getfullargspec(func.__wrapped__).args
     await func(**{k: v for k, v in kwargs.items() if k in spec})
-
-
 
 # Pyrogram eval command
 @app.on_edited_message(
