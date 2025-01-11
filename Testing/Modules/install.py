@@ -2,6 +2,7 @@ import os
 import asyncio
 from Testing import app, Bad
 from pyrogram import filters
+from Testing.logging import LOGGER
 from pyrogram.types import Message
 
 async def edit_or_reply(msg: Message, **kwargs):
