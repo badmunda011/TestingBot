@@ -14,9 +14,10 @@ async def main():
         importlib.import_module("Testing.Modules" + all_module)
     LOGGER("Testing.Modules").info("Successfully Imported Modules...")
     LOGGER("Testing").info("Bot Started Successfully...")
+    
+    # Add a delay or wait for an event
+    await asyncio.sleep(60)  # Sleep for 60 seconds
+
     await app.stop()
     await Bad.disconnect()
     LOGGER("Testing").info("Stopping Bot...")
-
-if __name__ == "__main__":
-    asyncio.get_event_loop().run_until_complete(main())
