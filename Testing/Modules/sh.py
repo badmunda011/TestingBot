@@ -1,20 +1,10 @@
 import os
-import shutil
-import asyncio
 import re
 import subprocess
 import sys
 import traceback
-import logging
-from inspect import getfullargspec
-from io import StringIO
-from time import time
-from pyrogram.types import BotCommand
-from pyrogram import filters, Client as PyroClient, idle
-from pyrogram.types import InlineKeyboardButton, InlineKeyboardMarkup, Message
-from telethon import TelegramClient, events, Button
-from telethon.tl.custom import Button
-
+from pyrogram import filters
+from pyrogram.types import Message
 
 @app.on_edited_message(
     filters.command("sh")
