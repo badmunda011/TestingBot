@@ -4,7 +4,6 @@ from pyrogram import Client, filters
 from pyrogram.types import Message
 import psutil  # For system stats like CPU, RAM, etc.
 from telethon import TelegramClient
-from telethon.tl.functions.help import GetNearestDc
 
 # Function to get system stats
 async def bot_sys_stats():
@@ -25,10 +24,6 @@ async def ping_com(client, message: Message):
     await client.get_me()
     resp = (datetime.now() - start).total_seconds() * 1000  # Convert to milliseconds
 
-    # Perform ping using Telethon
-    with TelegramClient('anon', api_id, api_hash) as telethon_client:
-        telethon_ping = (await telethon_client(GetNearestDc())).this_dc
-
     # Get system stats (CPU, RAM, Disk)
     UP, CPU, RAM, DISK = await bot_sys_stats()
 
@@ -40,6 +35,5 @@ async def ping_com(client, message: Message):
         f"💻 **CPU Usage**: {CPU}%\n"
         f"🧠 **RAM Usage**: {RAM}%\n"
         f"💾 **Disk Usage**: {DISK}%\n"
-        f"🌐 **Ping to TG Server (Telethon)**: {telethon_ping} ms\n\n"
         "Everything is running smoothly! 🚀"
     )
