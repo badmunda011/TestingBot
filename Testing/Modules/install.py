@@ -3,6 +3,7 @@ import asyncio
 import importlib
 from Testing import app, Bad
 from pyrogram import filters
+from inspect import getfullargspec
 from Testing.logging import LOGGER
 from pyrogram.types import Message
 
