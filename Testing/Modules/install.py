@@ -1,5 +1,6 @@
 import os
 import asyncio
+import importlib
 from Testing import app, Bad
 from pyrogram import filters
 from Testing.logging import LOGGER
@@ -29,7 +30,7 @@ installed_plugins = load_installed_plugins()
 # Load installed plugins at startup
 for plugin in installed_plugins:
     try:
-        __import__(plugin)
+        importlib.import_module(plugin)
         logger.info(f"Loaded plugin: {plugin}")
     except ImportError as e:
         logger.error(f"Failed to load plugin {plugin}: {str(e)}")
@@ -37,7 +38,7 @@ for plugin in installed_plugins:
 # Function to dynamically load a plugin
 def dynamic_load_plugin(plugin_name):
     try:
-        __import__(plugin_name)
+        importlib.import_module(plugin_name)
         logger.info(f"Dynamically loaded plugin: {plugin_name}")
     except ImportError as e:
         logger.error(f"Failed to dynamically load plugin {plugin_name}: {str(e)}")
