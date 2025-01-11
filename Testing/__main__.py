@@ -6,6 +6,8 @@ from Testing.Modules import ALL_MODULES
 from telethon import TelegramClient
 import Config
 
+from .logging import LOGGER
+
 
 # MAIN FUNCTION
 async def main():
