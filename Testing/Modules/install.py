@@ -15,118 +15,59 @@ async def edit_or_reply(msg: Message, **kwargs):
     spec = getfullargspec(func.__wrapped__).args
     await func(**{k: v for k, v in kwargs.items() if k in spec})
 
-# Load installed plugins from file
-def load_installed_plugins():
-    if os.path.exists("installed_plugins.txt"):
-        with open("installed_plugins.txt", "r") as file:
-            return set(file.read().splitlines())
-    return set()
+import importlib
+import os
+import sys
+from pathlib import Path
 
-# Save installed plugins to file
-def save_installed_plugins(plugins):
-    with open("installed_plugins.txt", "w") as file:
-        file.write("\n".join(plugins))
+from pyrogram import Client, filters
+from pyrogram.types import Message
 
-installed_plugins = load_installed_plugins()
+# Create a folder for plugins if it doesn't exist
+os.makedirs("Testing/Modules", exist_ok=True)
 
-# Load installed plugins at startup
-for plugin in installed_plugins:
-    try:
-        importlib.import_module(plugin)
-        logger.info(f"Loaded plugin: {plugin}")
-    except ImportError as e:
-        logger.error(f"Failed to load plugin {plugin}: {str(e)}")
 
-# Function to dynamically load a plugin
-def dynamic_load_plugin(plugin_name):
-    try:
-        importlib.import_module(plugin_name)
-        logger.info(f"Dynamically loaded plugin: {plugin_name}")
-    except ImportError as e:
-        logger.error(f"Failed to dynamically load plugin {plugin_name}: {str(e)}")
-        raise e
-
-# Function to check if a plugin is already installed
-def is_plugin_installed(plugin_name):
-    return plugin_name in installed_plugins
-
-# Modified install command
 @app.on_message(filters.command("install") & ~filters.forwarded & ~filters.via_bot)
-async def install_plugin(client, message):
-    if message.reply_to_message and message.reply_to_message.document:
-        # Handle installation from a .py file reply
-        try:
-            document = message.reply_to_message.document
-            plugin_name = os.path.splitext(document.file_name)[0]
-            if is_plugin_installed(plugin_name):
-                return await edit_or_reply(message, text=f"<b>Plugin '{plugin_name}' is already installed.</b>")
+async def install_plugins(client: Client, message: Message):
+    if not message.reply_to_message or not message.reply_to_message.document:
+        return await message.reply_text("Reply to a plugin file to install it.", quote=True)
 
-            file_path = await client.download_media(document)
-            with open(file_path, "r") as file:
-                code = file.read()
-            
-            # Save the code to new .py files for both Pyrogram and Telethon
-            with open(f"Testing/Modules/pyrogram_{plugin_name}.py", "w") as plugin_file_pyrogram, open(f"Testing/Modules/telethon_{plugin_name}.py", "w") as plugin_file_telethon:
-                plugin_file_pyrogram.write(code)
-                plugin_file_telethon.write(code)
-            
-            # Verify the plugin import
-            try:
-                dynamic_load_plugin(f"Testing.Modules.pyrogram_{plugin_name}")
-                dynamic_load_plugin(f"Testing.Modules.telethon_{plugin_name}")
-                installed_plugins.add(f"Testing.Modules.pyrogram_{plugin_name}")
-                installed_plugins.add(f"Testing.Modules.telethon_{plugin_name}")
-                save_installed_plugins(installed_plugins)
-                await edit_or_reply(message, text=f"<b>Plugin '{plugin_name}' installed successfully for both Pyrogram and Telethon from file.</b>")
-                logger.info(f"Plugin '{plugin_name}' installed successfully for both Pyrogram and Telethon from file.")
-            except ImportError as e:
-                await message.reply_text(f"<b>Failed to import plugin '{plugin_name}':</b>\n<pre>{str(e)}</pre>")
-        except Exception as e:
-            await message.reply_text(f"<b>Failed to install plugin from file:</b>\n<pre>{str(e)}</pre>")
-    else:
-        # Handle installation from command text
-        if len(message.command) < 2:
-            return await edit_or_reply(message, text="<b>ᴇxᴀᴍᴩʟᴇ :</b>\n/install <plugin_code>")
-        try:
-            plugin_code = message.text.split(" ", maxsplit=1)[1].strip()
-            plugin_name = "custom_plugin"
-            if is_plugin_installed(plugin_name):
-                return await edit_or_reply(message, text=f"<b>Plugin '{plugin_name}' is already installed.</b>")
+    msg = await message.reply_text("**Installing...**", quote=True)
+    plugin_path = await message.reply_to_message.download("Testing/Modules/")
 
-            with open(f"Testing/Modules/pyrogram_{plugin_name}.py", "w") as plugin_file_pyrogram, open(f"Testing/Modules/telethon_{plugin_name}.py", "w") as plugin_file_telethon:
-                plugin_file_pyrogram.write(plugin_code)
-                plugin_file_telethon.write(plugin_code)
-            
-            # Verify the plugin import
-            try:
-                dynamic_load_plugin(f"Testing.Modules.pyrogram_{plugin_name}")
-                dynamic_load_plugin(f"Testing.Modules.telethon_{plugin_name}")
-                installed_plugins.add(f"Testing.Modules.pyrogram_{plugin_name}")
-                installed_plugins.add(f"Testing.Modules.telethon_{plugin_name}")
-                save_installed_plugins(installed_plugins)
-                await edit_or_reply(message, text=f"<b>Plugin installed successfully for both Pyrogram and Telethon from command.</b>")
-                logger.info("Plugin installed successfully for both Pyrogram and Telethon from command.")
-            except ImportError as e:
-                await message.reply_text(f"<b>Failed to import plugin:</b>\n<pre>{str(e)}</pre>")
-        except Exception as e:
-            await message.reply_text(f"<b>Failed to install plugin from command:</b>\n<pre>{str(e)}</pre>")
+    if not plugin_path.endswith(".py"):
+        os.remove(plugin_path)
+        return await msg.edit("**Invalid Plugin:** Not a Python file.")
 
-# Modified uninstall command
-@app.on_message(filters.command("uninstall") & ~filters.forwarded & ~filters.via_bot)
-async def uninstall_plugin(client, message):
-    if len(message.command) < 2:
-        return await edit_or_reply(message, text="<b>ᴇxᴀᴍᴩʟᴇ :</b>\n/uninstall <plugin_name>")
-    plugin_name = message.text.split(" ", maxsplit=1)[1].strip()
+    plugin_name = Path(plugin_path).stem
     try:
-        os.remove(f"Testing/Modules/pyrogram_{plugin_name}.py")
-        os.remove(f"Testing/Modules/telethon_{plugin_name}.py")
-        installed_plugins.remove(f"Testing.Modules.pyrogram_{plugin_name}")
-        installed_plugins.remove(f"Testing.Modules.telethon_{plugin_name}")
-        save_installed_plugins(installed_plugins)
-        await edit_or_reply(message, text=f"<b>Plugin '{plugin_name}' uninstalled successfully for both Pyrogram and Telethon.</b>")
-        logger.info(f"Plugin '{plugin_name}' uninstalled successfully for both Pyrogram and Telethon.")
+        spec = importlib.util.spec_from_file_location(plugin_name, plugin_path)
+        load = importlib.util.module_from_spec(spec)
+        spec.loader.exec_module(load)
+        sys.modules[f"plugins.{plugin_name}"] = load
+        await msg.edit(f"**Installed Successfully:** `{plugin_name}.py`")
     except Exception as e:
-        await edit_or_reply(message, text=f"<b>Failed to uninstall plugin '{plugin_name}':</b>\n<pre>{str(e)}</pre>")
+        await msg.edit(f"**Error:** {str(e)}")
+        os.remove(plugin_path)
+
+
+@app.on_message(filters.command("uninstall") & ~filters.forwarded & ~filters.via_bot)
+async def uninstall_plugins(client: Client, message: Message):
+    if len(message.command) < 2:
+        return await message.reply_text("Provide the plugin name to uninstall.", quote=True)
+
+    plugin_name = message.command[1].strip().replace(".py", "")
+    plugin_path = f"Testing/Modules/{plugin_name}.py"
+
+    if not os.path.exists(plugin_path):
+        return await message.reply_text(f"**Plugin Not Found:** `{plugin_name}`", quote=True)
+
+    try:
+        os.remove(plugin_path)
+        sys.modules.pop(f"plugins.{plugin_name}", None)
+        await message.reply_text(f"**Uninstalled Successfully:** `{plugin_name}.py`", quote=True)
+    except Exception as e:
+        await message.reply_text(f"**Error:** {str(e)}", quote=True)
 
 # Restart command to ensure commands persist across restarts
 @app.on_message(filters.command("rs") & ~filters.forwarded & ~filters.via_bot)
