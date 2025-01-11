@@ -1,20 +1,8 @@
 import os
-import shutil
 import asyncio
-import re
-import subprocess
-import sys
-import traceback
 import logging
-from inspect import getfullargspec
-from io import StringIO
-from time import time
-from pyrogram.types import BotCommand
-from pyrogram import filters, Client as PyroClient, idle
-from pyrogram.types import InlineKeyboardButton, InlineKeyboardMarkup, Message
-from telethon import TelegramClient, events, Button
-from telethon.tl.custom import Button
-
+from pyrogram import filters
+from pyrogram.types import Message
 
 # Load installed plugins from file
 def load_installed_plugins():
@@ -37,8 +25,6 @@ for plugin in installed_plugins:
         logger.info(f"Loaded plugin: {plugin}")
     except ImportError as e:
         logger.error(f"Failed to load plugin {plugin}: {str(e)}")
-
-
 
 # Function to check if a plugin is already installed
 def is_plugin_installed(plugin_name):
@@ -107,7 +93,6 @@ async def install_plugin(client, message):
             await edit_or_reply(message, text=f"<b>Failed to install plugin from command:</b>\n<pre>{str(e)}</pre>")
             logger.error(f"Failed to install plugin from command: {str(e)}")
 
-
 # Modified uninstall command
 @app.on_message(filters.command("uninstall") & ~filters.forwarded & ~filters.via_bot)
 async def uninstall_plugin(client, message):
@@ -125,10 +110,9 @@ async def uninstall_plugin(client, message):
 
 # Restart command to ensure commands persist across restarts
 @app.on_message(filters.command("rs") & ~filters.forwarded & ~filters.via_bot)
-async def restart(client: PyroClient, message: Message):
+async def restart(client, message):
     reply = await message.reply_text("**🔁 Restarting...**")
     await message.delete()
     await reply.edit_text("Successfully Restarted\nPlease wait 1-2 min for loading user plugins...")
     logger.info("Bot is restarting...")
     os.system(f"kill -9 {os.getpid()} && python3 main.py")
-        
