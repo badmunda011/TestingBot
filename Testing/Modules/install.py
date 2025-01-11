@@ -1,30 +1,19 @@
 import os
 import sys
-import asyncio
 import importlib
-from Testing import app, Bad
-from pyrogram import filters
-from inspect import getfullargspec
-from Testing.logging import LOGGER
+from pathlib import Path
+from pyrogram import Client, filters
 from pyrogram.types import Message
-
+from Testing import app
+from inspect import getfullargspec
 
 async def edit_or_reply(msg: Message, **kwargs):
     func = msg.edit_text if msg.from_user.is_self else msg.reply
     spec = getfullargspec(func.__wrapped__).args
     await func(**{k: v for k, v in kwargs.items() if k in spec})
 
-import importlib
-import os
-import sys
-from pathlib import Path
-
-from pyrogram import Client, filters
-from pyrogram.types import Message
-
 # Create a folder for plugins if it doesn't exist
 os.makedirs("Testing/Modules", exist_ok=True)
-
 
 @app.on_message(filters.command("install") & ~filters.forwarded & ~filters.via_bot)
 async def install_plugins(client: Client, message: Message):
@@ -49,7 +38,6 @@ async def install_plugins(client: Client, message: Message):
         await msg.edit(f"**Error:** {str(e)}")
         os.remove(plugin_path)
 
-
 @app.on_message(filters.command("uninstall") & ~filters.forwarded & ~filters.via_bot)
 async def uninstall_plugins(client: Client, message: Message):
     if len(message.command) < 2:
@@ -67,4 +55,3 @@ async def uninstall_plugins(client: Client, message: Message):
         await message.reply_text(f"**Uninstalled Successfully:** `{plugin_name}.py`", quote=True)
     except Exception as e:
         await message.reply_text(f"**Error:** {str(e)}", quote=True)
-
