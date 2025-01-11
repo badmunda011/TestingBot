@@ -8,7 +8,6 @@ from inspect import getfullargspec
 from Testing.logging import LOGGER
 from pyrogram.types import Message
 
-logger = LOGGER(__name__)
 
 async def edit_or_reply(msg: Message, **kwargs):
     func = msg.edit_text if msg.from_user.is_self else msg.reply
@@ -69,11 +68,3 @@ async def uninstall_plugins(client: Client, message: Message):
     except Exception as e:
         await message.reply_text(f"**Error:** {str(e)}", quote=True)
 
-# Restart command to ensure commands persist across restarts
-@app.on_message(filters.command("rs") & ~filters.forwarded & ~filters.via_bot)
-async def restart(client, message):
-    reply = await message.reply_text("**🔁 Restarting...**")
-    await message.delete()
-    await reply.edit_text("Successfully Restarted\nPlease wait 1-2 min for loading user plugins...")
-    logger.info("Bot is restarting...")
-    os.execv(sys.executable, ['python3'] + sys.argv)
