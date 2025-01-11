@@ -34,6 +34,15 @@ for plugin in installed_plugins:
     except ImportError as e:
         logger.error(f"Failed to load plugin {plugin}: {str(e)}")
 
+# Function to dynamically load a plugin
+def dynamic_load_plugin(plugin_name):
+    try:
+        __import__(plugin_name)
+        logger.info(f"Dynamically loaded plugin: {plugin_name}")
+    except ImportError as e:
+        logger.error(f"Failed to dynamically load plugin {plugin_name}: {str(e)}")
+        raise e
+
 # Function to check if a plugin is already installed
 def is_plugin_installed(plugin_name):
     return plugin_name in installed_plugins
@@ -54,15 +63,16 @@ async def install_plugin(client, message):
                 code = file.read()
             
             # Save the code to new .py files for both Pyrogram and Telethon
-            with open(f"pyrogram_{plugin_name}.py", "w") as plugin_file_pyrogram, open(f"telethon_{plugin_name}.py", "w") as plugin_file_telethon:
+            with open(f"Testing/Modules/pyrogram_{plugin_name}.py", "w") as plugin_file_pyrogram, open(f"Testing/Modules/telethon_{plugin_name}.py", "w") as plugin_file_telethon:
                 plugin_file_pyrogram.write(code)
                 plugin_file_telethon.write(code)
             
             # Verify the plugin import
             try:
-                __import__(f"pyrogram_{plugin_name}")
-                __import__(f"telethon_{plugin_name}")
-                installed_plugins.add(plugin_name)
+                dynamic_load_plugin(f"Testing.Modules.pyrogram_{plugin_name}")
+                dynamic_load_plugin(f"Testing.Modules.telethon_{plugin_name}")
+                installed_plugins.add(f"Testing.Modules.pyrogram_{plugin_name}")
+                installed_plugins.add(f"Testing.Modules.telethon_{plugin_name}")
                 save_installed_plugins(installed_plugins)
                 await edit_or_reply(message, text=f"<b>Plugin '{plugin_name}' installed successfully for both Pyrogram and Telethon from file.</b>")
                 logger.info(f"Plugin '{plugin_name}' installed successfully for both Pyrogram and Telethon from file.")
@@ -80,15 +90,16 @@ async def install_plugin(client, message):
             if is_plugin_installed(plugin_name):
                 return await edit_or_reply(message, text=f"<b>Plugin '{plugin_name}' is already installed.</b>")
 
-            with open(f"pyrogram_{plugin_name}.py", "w") as plugin_file_pyrogram, open(f"telethon_{plugin_name}.py", "w") as plugin_file_telethon:
+            with open(f"Testing/Modules/pyrogram_{plugin_name}.py", "w") as plugin_file_pyrogram, open(f"Testing/Modules/telethon_{plugin_name}.py", "w") as plugin_file_telethon:
                 plugin_file_pyrogram.write(plugin_code)
                 plugin_file_telethon.write(plugin_code)
             
             # Verify the plugin import
             try:
-                __import__(f"pyrogram_{plugin_name}")
-                __import__(f"telethon_{plugin_name}")
-                installed_plugins.add(plugin_name)
+                dynamic_load_plugin(f"Testing.Modules.pyrogram_{plugin_name}")
+                dynamic_load_plugin(f"Testing.Modules.telethon_{plugin_name}")
+                installed_plugins.add(f"Testing.Modules.pyrogram_{plugin_name}")
+                installed_plugins.add(f"Testing.Modules.telethon_{plugin_name}")
                 save_installed_plugins(installed_plugins)
                 await edit_or_reply(message, text=f"<b>Plugin installed successfully for both Pyrogram and Telethon from command.</b>")
                 logger.info("Plugin installed successfully for both Pyrogram and Telethon from command.")
@@ -104,9 +115,10 @@ async def uninstall_plugin(client, message):
         return await edit_or_reply(message, text="<b>ᴇxᴀᴍᴩʟᴇ :</b>\n/uninstall <plugin_name>")
     plugin_name = message.text.split(" ", maxsplit=1)[1].strip()
     try:
-        os.remove(f"pyrogram_{plugin_name}.py")
-        os.remove(f"telethon_{plugin_name}.py")
-        installed_plugins.remove(plugin_name)
+        os.remove(f"Testing/Modules/pyrogram_{plugin_name}.py")
+        os.remove(f"Testing/Modules/telethon_{plugin_name}.py")
+        installed_plugins.remove(f"Testing.Modules.pyrogram_{plugin_name}")
+        installed_plugins.remove(f"Testing.Modules.telethon_{plugin_name}")
         save_installed_plugins(installed_plugins)
         await edit_or_reply(message, text=f"<b>Plugin '{plugin_name}' uninstalled successfully for both Pyrogram and Telethon.</b>")
         logger.info(f"Plugin '{plugin_name}' uninstalled successfully for both Pyrogram and Telethon.")
