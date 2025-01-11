@@ -67,11 +67,9 @@ async def install_plugin(client, message):
                 await edit_or_reply(message, text=f"<b>Plugin '{plugin_name}' installed successfully for both Pyrogram and Telethon from file.</b>")
                 logger.info(f"Plugin '{plugin_name}' installed successfully for both Pyrogram and Telethon from file.")
             except ImportError as e:
-                await edit_or_reply(message, text=f"<b>Failed to import plugin '{plugin_name}':</b>\n<pre>{str(e)}</pre>")
-                logger.error(f"Failed to import plugin '{plugin_name}': {str(e)}")
+                await message.reply_text(f"<b>Failed to import plugin '{plugin_name}':</b>\n<pre>{str(e)}</pre>")
         except Exception as e:
-            await edit_or_reply(message, text=f"<b>Failed to install plugin from file:</b>\n<pre>{str(e)}</pre>")
-            logger.error(f"Failed to install plugin from file: {str(e)}")
+            await message.reply_text(f"<b>Failed to install plugin from file:</b>\n<pre>{str(e)}</pre>")
     else:
         # Handle installation from command text
         if len(message.command) < 2:
@@ -95,11 +93,9 @@ async def install_plugin(client, message):
                 await edit_or_reply(message, text=f"<b>Plugin installed successfully for both Pyrogram and Telethon from command.</b>")
                 logger.info("Plugin installed successfully for both Pyrogram and Telethon from command.")
             except ImportError as e:
-                await edit_or_reply(message, text=f"<b>Failed to import plugin:</b>\n<pre>{str(e)}</pre>")
-                logger.error(f"Failed to import plugin: {str(e)}")
+                await message.reply_text(f"<b>Failed to import plugin:</b>\n<pre>{str(e)}</pre>")
         except Exception as e:
-            await edit_or_reply(message, text=f"<b>Failed to install plugin from command:</b>\n<pre>{str(e)}</pre>")
-            logger.error(f"Failed to install plugin from command: {str(e)}")
+            await message.reply_text(f"<b>Failed to install plugin from command:</b>\n<pre>{str(e)}</pre>")
 
 # Modified uninstall command
 @app.on_message(filters.command("uninstall") & ~filters.forwarded & ~filters.via_bot)
@@ -110,11 +106,12 @@ async def uninstall_plugin(client, message):
     try:
         os.remove(f"pyrogram_{plugin_name}.py")
         os.remove(f"telethon_{plugin_name}.py")
+        installed_plugins.remove(plugin_name)
+        save_installed_plugins(installed_plugins)
         await edit_or_reply(message, text=f"<b>Plugin '{plugin_name}' uninstalled successfully for both Pyrogram and Telethon.</b>")
         logger.info(f"Plugin '{plugin_name}' uninstalled successfully for both Pyrogram and Telethon.")
     except Exception as e:
         await edit_or_reply(message, text=f"<b>Failed to uninstall plugin '{plugin_name}':</b>\n<pre>{str(e)}</pre>")
-        logger.error(f"Failed to uninstall plugin '{plugin_name}': {str(e)}")
 
 # Restart command to ensure commands persist across restarts
 @app.on_message(filters.command("rs") & ~filters.forwarded & ~filters.via_bot)
