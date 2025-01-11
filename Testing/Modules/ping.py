@@ -1,12 +1,9 @@
-from Testing import app
+from Testing import app, Bad
 from datetime import datetime
 from pyrogram import Client, filters
-from pyrogram.types import Message, InlineKeyboardMarkup, InlineKeyboardButton
+from pyrogram.types import Message
 import psutil  # For system stats like CPU, RAM, etc.
-
-# Replace these with appropriate imports or definitions
-PING_IMG_URL = "https://te.legra.ph/file/b8a0c1a00db3e57522b53.jpg"  # URL for the ping image
-BANNED_USERS = []  # List of banned users, could be set up as needed
+from telethon import TelegramClient
 
 # Function to get system stats
 async def bot_sys_stats():
@@ -22,15 +19,13 @@ async def bot_sys_stats():
 @app.on_message(filters.command(["ping", "alive"]))
 async def ping_com(client, message: Message):
     start = datetime.now()
-
-    # Send a reply with a ping image
-    response = await message.reply_photo(
-        photo=PING_IMG_URL,
-        caption="🏓 **Pong!**\n\nYour bot is alive and kicking! Let me check the status for you..."
-    )
-
-    # Perform ping using app (app.ping() is the method to ping Telegram servers)
+    
+    # Perform ping using Pyrogram
     pytgping = await app.ping()
+    
+    # Perform ping using Telethon
+    with TelegramClient('anon', api_id, api_hash) as telethon_client:
+        telethon_ping = (await telethon_client(functions.PingRequest())).ping_ms
 
     # Get system stats (CPU, RAM, Disk)
     UP, CPU, RAM, DISK = await bot_sys_stats()
@@ -38,23 +33,15 @@ async def ping_com(client, message: Message):
     # Calculate response time in milliseconds
     resp = (datetime.now() - start).microseconds / 1000
 
-    # Prepare the inline keyboard buttons
-    buttons = [
-        [
-            InlineKeyboardButton("Support", url="https://t.me/your_support_chat"),
-            InlineKeyboardButton("Bot Info", callback_data="bot_info")
-        ]
-    ]
-
-    # Edit the message with detailed stats and buttons
-    await response.edit_text(
+    # Send a simple reply with detailed stats
+    await message.reply_text(
         f"🔔 **Ping Response**:\n\n"
         f"⏱ **Response Time**: {resp} ms\n"
         f"📡 **Bot Uptime**: {UP}\n"
         f"💻 **CPU Usage**: {CPU}%\n"
         f"🧠 **RAM Usage**: {RAM}%\n"
         f"💾 **Disk Usage**: {DISK}%\n"
-        f"🌐 **Ping to TG Server**: {pytgping} ms\n\n"
-        "Everything is running smoothly! 🚀",
-        reply_markup=InlineKeyboardMarkup(buttons)  # Add inline buttons
+        f"🌐 **Ping to TG Server (Pyrogram)**: {pytgping} ms\n"
+        f"🌐 **Ping to TG Server (Telethon)**: {telethon_ping} ms\n\n"
+        "Everything is running smoothly! 🚀"
     )
