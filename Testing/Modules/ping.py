@@ -4,6 +4,7 @@ from pyrogram import Client, filters
 from pyrogram.types import Message
 import psutil  # For system stats like CPU, RAM, etc.
 from telethon import TelegramClient
+from telethon.tl.functions.help import GetNearestDc
 
 # Function to get system stats
 async def bot_sys_stats():
@@ -20,28 +21,25 @@ async def bot_sys_stats():
 async def ping_com(client, message: Message):
     start = datetime.now()
     
-    # Perform ping using Pyrogram
-    pytgping = await app.ping()
-    
+    # Simulate a simple request to measure response time
+    await client.get_me()
+    resp = (datetime.now() - start).total_seconds() * 1000  # Convert to milliseconds
+
     # Perform ping using Telethon
     with TelegramClient('anon', api_id, api_hash) as telethon_client:
-        telethon_ping = (await telethon_client(functions.PingRequest())).ping_ms
+        telethon_ping = (await telethon_client(GetNearestDc())).this_dc
 
     # Get system stats (CPU, RAM, Disk)
     UP, CPU, RAM, DISK = await bot_sys_stats()
 
-    # Calculate response time in milliseconds
-    resp = (datetime.now() - start).microseconds / 1000
-
     # Send a simple reply with detailed stats
     await message.reply_text(
         f"🔔 **Ping Response**:\n\n"
-        f"⏱ **Response Time**: {resp} ms\n"
+        f"⏱ **Response Time**: {resp:.2f} ms\n"
         f"📡 **Bot Uptime**: {UP}\n"
         f"💻 **CPU Usage**: {CPU}%\n"
         f"🧠 **RAM Usage**: {RAM}%\n"
         f"💾 **Disk Usage**: {DISK}%\n"
-        f"🌐 **Ping to TG Server (Pyrogram)**: {pytgping} ms\n"
         f"🌐 **Ping to TG Server (Telethon)**: {telethon_ping} ms\n\n"
         "Everything is running smoothly! 🚀"
     )
