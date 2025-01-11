@@ -1,4 +1,5 @@
 import os
+import sys
 import asyncio
 import importlib
 from Testing import app, Bad
@@ -134,4 +135,4 @@ async def restart(client, message):
     await message.delete()
     await reply.edit_text("Successfully Restarted\nPlease wait 1-2 min for loading user plugins...")
     logger.info("Bot is restarting...")
-    os.system(f"kill -9 {os.getpid()} && python3 main.py")
+    os.execv(sys.executable, ['python3'] + sys.argv)
