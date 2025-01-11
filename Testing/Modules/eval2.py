@@ -10,7 +10,7 @@ from telethon.tl.custom import Button
 
 @Bad.on(events.NewMessage(pattern='/eval2'))
 async def eval_handler(event):
-    if event.reply_to and event.reply_to.file and event.reply_to.file.name.endswith('.py'):
+    if event.reply_to and hasattr(event.reply_to, 'media') and event.reply_to.media and event.reply_to.media.document and event.reply_to.media.document.mime_type == 'text/x-python':
         file_path = await event.client.download_media(event.reply_to)
         with open(file_path, "r") as file:
             cmd = file.read()
