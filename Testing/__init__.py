@@ -1,6 +1,6 @@
-import Config
 from pyrogram import Client
 from telethon import TelegramClient
+import Config
 
 # Pyrogram Client
 app = Client(
