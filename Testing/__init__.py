@@ -2,6 +2,8 @@ import Config
 from pyrogram import Client
 from telethon import TelegramClient
 
+from .logging import LOGGER
+
 # Pyrogram Client
 app = Client(
              name="app", 
