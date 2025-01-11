@@ -3,6 +3,7 @@ import sys
 import traceback
 from io import StringIO
 from time import time
+from Testing import app, Bad
 from telethon import events, Button
 from telethon.tl.custom import Button
 
