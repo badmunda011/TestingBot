@@ -1,6 +1,7 @@
 import os
 import asyncio
 import logging
+from Testing import app, Bad
 from pyrogram import filters
 from pyrogram.types import Message
 
