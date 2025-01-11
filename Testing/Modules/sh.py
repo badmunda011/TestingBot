@@ -3,6 +3,7 @@ import re
 import subprocess
 import sys
 import traceback
+from inspect import getfullargspec  # Add this import
 from Testing import app, Bad
 from pyrogram import filters
 from pyrogram.types import Message
