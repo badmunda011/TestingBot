@@ -12,8 +12,8 @@ app = Client(
 )
 
 # Telethon Bot
-telethon_bot = TelegramClient(
+Bad = TelegramClient(
              api_id=Config.APP_ID, 
              api_hash=Config.HASH_ID
-).start(bot_token=Config.TOKEN),
-plugins=dict(root="Testing.Modules")
+             ).start(bot_token=Config.TOKEN),
+            plugins=dict(root="Testing.Modules")
