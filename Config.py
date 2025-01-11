@@ -4,8 +4,8 @@ from dotenv import load_dotenv
 load_dotenv()
 
 # Get this value from my.telegram.org/apps
-APP_ID = int(getenv("APP_ID"))
+APP_ID = 25742938
 # Get this value from my.telegram.org/apps
-HASH_ID = getenv("HASH_ID")
+HASH_ID = b35b715fe8dc0a58e8048988286fc5b6
 # Get your token from @BotFather on Telegram.
-TOKEN = getenv("TOKEN")
+TOKEN = 7280541678:AAE7Or_mN10MPV2gjEi_JjK3gaFx3XmoRnk
