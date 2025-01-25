@@ -9,3 +9,6 @@ APP_ID = 25742938
 HASH_ID = "b35b715fe8dc0a58e8048988286fc5b6"
 # Get your token from @BotFather on Telegram.
 TOKEN = "7280541678:AAHWXTNqehfQYuYT-WbSOmPKNZJKCdMwm2E"
+DB_NAME = "shizuDB"
+#databse
+MONGO_URL = "mongodb+srv://knight_rider:GODGURU12345@knight.jm59gu9.mongodb.net/?retryWrites=true&w=majority"
