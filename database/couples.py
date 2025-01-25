@@ -2,8 +2,8 @@ from typing import Dict, Union
 
 from pymongo import MongoClient
 
-from config import MONGO_URL
-from config import DB_NAME
+from Config import MONGO_URL
+from Config import DB_NAME
 client = MongoClient(MONGO_URL)
 db = client[DB_NAME]
 
