@@ -10,6 +10,10 @@ db = client[DB_NAME]
 coupledb = db.couple
 karmadb = db.karma
 
+async def get_image(cid: int):
+    chat_data = coupledb.get(cid, {})
+    image = chat_data.get("img", "")
+    return image
 
 async def _get_lovers(chat_id: int):
     lovers = coupledb.find_one({"chat_id": chat_id})
