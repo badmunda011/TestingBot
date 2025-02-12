@@ -44,4 +44,4 @@ async def main():
     LOGGER("Testing").info("Stopping Bot...")
 
 if __name__ == "__main__":
-    asyncio.get_event_loop().run_until_complete(main())
+    asyncio.run(main())
