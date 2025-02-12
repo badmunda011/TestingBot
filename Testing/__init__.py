@@ -19,6 +19,14 @@ Bad = TelegramClient(
     api_hash=Config.HASH_ID
 ).start(bot_token=Config.TOKEN)
 
-# Telegram (python-telegram-bot) Client
+from telegram.ext import Application
+import Config
+
+# Initialize Telegram Bot
 Sukh = Application.builder().token(Config.TOKEN).build()
-Sukh.initialize() 
+
+async def initialize_bot():
+    await Sukh.initialize()  # ✅ Properly awaiting the coroutine
+
+# Initialize the bot properly
+asyncio.run(initialize_bot())  # ✅ Ensure initialization before starting
