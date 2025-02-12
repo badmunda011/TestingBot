@@ -21,3 +21,4 @@ Bad = TelegramClient(
 
 # Telegram (python-telegram-bot) Client
 Sukh = Application.builder().token(Config.TOKEN).build()
+Sukh.initialize() 
