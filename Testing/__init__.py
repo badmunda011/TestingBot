@@ -28,6 +28,3 @@ Sukh = Application.builder().token(Config.TOKEN).build()
 
 async def initialize_bot():
     await Sukh.initialize()  # ✅ Properly awaiting the coroutine
-
-# Initialize the bot properly
-asyncio.run(initialize_bot())  # ✅ Ensure initialization before starting
