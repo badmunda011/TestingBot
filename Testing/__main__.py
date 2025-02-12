@@ -30,7 +30,9 @@ def LOGGER(name: str) -> logging.Logger:
 async def main():
     await app.start()
     await Bad.start()
+    await Sukh.initialize()
     await Sukh.start()
+    await Sukh.run_polling()
     for all_module in ALL_MODULES:
         importlib.import_module("Testing.Modules" + all_module)
     LOGGER("Testing.Modules").info("Successfully Imported Modules...")
