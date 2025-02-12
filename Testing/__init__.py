@@ -2,6 +2,7 @@ from pyrogram import Client
 from telethon import TelegramClient
 from telegram.ext import Application
 import Config
+import asyncio
 
 # Pyrogram Client
 app = Client(
